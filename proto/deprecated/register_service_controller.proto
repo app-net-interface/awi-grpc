@@ -1,0 +1,82 @@
+// Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
+// All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http:www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+option go_package="./;awi";
+
+import "register_service.proto";
+//import "google/protobuf/timestamp.proto";
+//import "google/protobuf/wrappers.proto";
+service RegistrationServiceController {
+
+    // Workload centric connectivity RPCs
+    
+    /* 
+    User needs to know what workloads (service/pod etc.) are available to connect to.
+    This is nothing but routing information in a CPE router. 
+    There are routes for services or ingress that have been configured within a CPE router that allows CPE to route packets
+    to that clusterIP or Ingress. 
+
+    An SDWAN provider (controller) could annotate workload information metadata to a route that exists. 
+    For eg; 
+
+    routeMetadata
+        routeName
+        clusterName
+        clusterType
+        serviceName (FQDN)
+        workloadType
+        meta (vendor specific info. in urn format)
+        
+        I have a route with <<routeName>> connecting to <<workloadName>>, which is of type 
+        <<workloadType>> and present in cluster <<clusterName>>, that is of type <<clusterType>> 
+    Registration can happen implictly or explicitly within the cluster. But, explicitly with SDWAN controller. 
+
+    Registeration is needed, so that other resources can discover the workload. 
+    This idea is of registration is natural. Registration puts SDWAN in front and center and allows any type of workload to be registered.
+    
+    A cluster should only be able to do CRUD for a service it owns. (Consul has all these built-in). 
+
+    From a service point of view, registration parameters need to be expressed as annotations, 
+    
+    */
+    rpc RegisterService (RegisterServiceRequest)
+        returns (RegisterServiceResponse) {}
+    rpc ListRegisteredServices (ListRegisteredServicesRequest) 
+        returns (GetRegisteredServiceResponse) {}
+    rpc GetRegisteredServiceById (GetRegisteredServiceRequest) 
+        returns (GetRegisteredServiceResponse) {} 
+    rpc UpdateRegisteredServices (UpdateRegisteredServicesRequest) 
+        returns (UpdateRegisteredServicesResponse) {}
+    rpc UnRegisterService (UnRegisterServiceRequest) 
+        returns (UnRegisterServiceResponse) {}  
+    /* 
+   
+    Connect to a remote service that has already been registered and discovered. 
+    Each connection would have a connection id . There could be multiple connection for a  single remote service     
+    Vendor plugin must be smart enough to map the destination subnet to the right sdwan router site-ip address. 
+    This would require an API on the vendor controller to provide mapping for site router <-> private subnet it can route to.  
+    For its own sanity, vendor sdwan driver must reject the request if the subnets are part of the same cluster. 
+    This API should ideally real time for the vendor plugin to understand the changes to routing. 
+    It also creates routing rules for the tunnel with source subnet(s) and destination subnet(s) in the argument.
+    
+    Authorization : TBD (Likely SPIFFE & SPIRE based) 
+         
+    */
+}
+
+

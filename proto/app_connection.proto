@@ -1,0 +1,388 @@
+// Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
+// All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http:www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+import "common.proto";
+import "cloud_request.proto";
+
+option go_package = "./;awi";
+
+message AppConnection {
+    // Don't use enums for now as they are problematic in CRD spec build
+    string controller = 1;
+    AppMetadata metadata = 2;
+    From from = 3;
+    To to = 4;
+    AccessPolicySelector accessPolicy = 5;
+    NetworkDomainConnection networkDomainConnection = 6;
+    NetworkPolicySelector networkPolicy = 7;
+}
+
+enum Controller {
+    Cisco_vManage = 0;
+    Cisco_Meraki_Dashboard = 1;
+    Versa = 2;
+    Juniper = 3;
+    Palo_Alto = 4;
+    Turnium = 5;
+    Tufin = 6;
+    AWS_CloudWAN = 7;
+}
+
+enum AccessType {
+    ALLOW = 0;
+    DENY = 1;
+}
+
+message AppMetadata {
+    string name = 1;
+    string description = 2;
+    map<string, string> label = 3;
+    string creationTimestamp = 4;
+    string modificationTimestamp = 5;
+}
+
+message From {
+    Endpoint endpoint = 1;
+    AppSubnet subnet = 2;
+    Namespace namespace = 3;
+    SGT SGT = 4;
+    Cluster cluster = 5;
+    NetworkDomain networkDomain = 6;
+}
+
+message To {
+    Endpoint endpoint = 1;
+    AppSubnet subnet = 2;
+    Namespace namespace = 3;
+    Service service = 4;
+    repeated string externalEntities = 5;
+    Cluster cluster = 6;
+    NetworkDomain networkDomain = 7;
+}
+
+enum Kind {
+    VM = 0;
+    CONTAINER = 1;
+    POD = 2;
+}
+
+message MatchName {
+    string name = 1;
+}
+
+message MatchNamespace {
+    string name = 1;
+}
+
+message MatchCluster {
+    string name = 1;
+}
+
+message MatchId {
+    string id = 1;
+}
+
+message MatchOwner {
+    string owner = 1;
+}
+
+message MatchHost {
+    string ip = 1;
+}
+
+message Endpoint {
+    string kind = 1;
+
+    message Selector {
+        map<string, string> matchLabels = 1;
+        repeated MatchExpression matchExpressions = 2;
+        MatchCluster matchCluster = 3;
+        MatchNamespace matchNamespace = 4;
+        MatchName matchName = 5;
+    }
+    Selector selector = 2;
+}
+
+message MatchExpression {
+    string key = 1;
+    string operator = 2;
+    repeated string values = 3;
+}
+
+message AppSubnet {
+    message Selector {
+        map<string, string> matchLabels = 1;
+        repeated string matchPrefix = 2;
+        repeated MatchExpression matchExpressions = 3;
+    }
+    Selector selector = 1;
+}
+
+message Namespace {
+    message Selector {
+        string matchName = 1;
+        map<string, string> matchLabels = 2;
+        repeated MatchExpression matchExpressions = 3;
+    }
+    Selector selector = 1;
+}
+
+message SGT {
+    string name = 1;
+}
+
+message ServiceKind {
+    message K8SService {
+        string serviceType = 2;
+    }
+    message VMService {
+        string serviceType = 1;
+    }
+
+    K8SService k8sService = 1;
+    VMService vmService = 2;
+}
+
+message Service {
+    ServiceKind kind = 1;
+    message Selector {
+        MatchName matchName = 1;
+        MatchNamespace matchNamespace = 2;
+        MatchCluster matchCluster = 3;
+        map<string, string> matchLabels = 4;
+        MatchHost matchHost = 5;
+        repeated MatchExpression matchExpressions = 6;
+    }
+    Selector selector = 2;
+}
+
+message Cluster {
+    message Selector {
+        MatchName matchName = 1;
+        map<string, string> matchLabels = 2;
+    }
+    Selector selector = 1;
+}
+
+message NetworkDomain {
+    // VPC or VRF
+    string Kind = 1;
+    message Selector {
+        map<string, string> matchLabels = 1;
+        MatchId matchID = 2;
+        MatchName matchName = 3;
+        MatchOwner matchOwner = 4;
+    }
+    Selector selector = 2;
+}
+
+message AccessPolicySelector {
+    message Selector {
+        MatchName matchName = 1;
+        MatchId matchId = 2;
+        map<string, string> matchLabels = 3;
+    }
+
+    message MatchName {
+        string name = 1;
+    }
+
+    message MatchId {
+        string id = 1;
+    }
+
+    Selector selector = 1;
+}
+
+message NetworkPolicySelector {
+    message Selector {
+        string matchName = 1;
+    }
+    Selector selector = 1;
+}
+
+message NetworkAccessControl {
+    string protocol = 1;
+    string port = 2;
+}
+
+message NetworkDomainConnection {
+    message Selector {
+        string matchName = 1;
+    }
+    Selector selector = 1;
+}
+
+message NetworkPolicy {
+    message Selector {
+        string matchName = 1;
+    }
+    Selector selector = 1;
+}
+
+message AppConnectionResponse {
+
+    Error error = 1; // request response code
+    string app_conn_id = 2;
+    string app_conn_name = 3;
+
+    Status status = 4; // Connection provisioning status : IN_PROGRESS, SUCCESS, FAILED
+
+    message meta {
+        string app_conn_direction = 1; // Egres, ingress, bi-directional
+        string connection_source_ip = 2; // Source IP of the connection
+        string connection_dest_ip = 3; // Destination IP of the connection
+        string connection_source_tag = 4; // Source IP of the connection
+        string connection_dest_tag = 5; // Destination IP of the connection
+        string connection_status_url = 6; // URL to get connection status
+        string connection_statistics_url = 7; // URL to get connection statistics
+        string connection_events_url = 8; // URL to get connection events
+    }
+    meta connection_meta = 6;
+}
+
+
+message GetAppConnectionResponse {
+    Error error = 1; // request response code
+    AppConnectionInformation app_connection = 2;
+}
+
+// disconnect
+message AppDisconnectionRequest {
+    string connection_id = 1;
+}
+
+message AppDisconnectionResponse {
+    Error error = 1;
+    string connection_id = 2;
+    string connection_name = 3;
+    // AccessControl response code
+    Status status = 4;
+}
+
+message AppConnectionStatusResponse {
+    Error error = 1; // request response code
+    string app_conn_id = 2;
+    string app_conn_name = 3;
+    Status status = 4;
+}
+
+message AppConnectionStatistics {
+    Error error = 1; // request response code
+}
+
+message AppConnectionStatisticsResponse {
+    Error error = 1; // request response code
+    string app_conn_id = 2;
+    string app_conn_name = 3;
+    AppConnectionStatistics stats = 4;
+}
+
+message AppConnectionEvents {
+    Error error = 1; // request response code
+}
+
+message AppConnectionEventsResponse {
+    Error error = 1; // request response code
+    string app_conn_id = 2;
+    string app_conn_name = 3;
+    AppConnectionEvents events = 4;
+}
+
+// GetConnection() - need a service registry integration
+message GetAppConnectionRequest {
+    string connection_id = 1;
+}
+
+
+message GetAppConnectionStatusRequest {
+    string connection_id = 1;
+}
+
+message GetAppConnectionStatisticsRequest {
+    string connection_id = 1;
+}
+
+message GetAppConnectionEventsRequest {
+    string connection_id = 1;
+}
+
+message ListAppConnectionsRequest {
+}
+message ListAppConnectionsResponse {
+    Error error = 1;
+    repeated AppConnectionInformation app_connections = 2;
+}
+
+message MatchedResources {
+    repeated Instance matchedInstances = 1;
+    repeated Pod matchedPods = 2;
+    repeated Subnet matchedSubnets = 3;
+    repeated K8sService matchedServices = 4;
+}
+
+message AppConnectionInformation {
+    string id = 1;
+    AppConnection appConnectionConfig = 2;
+    Status status = 3;
+    string NetworkDomainConnectionName = 4;
+    MatchedResources sourceMatched = 5;
+    MatchedResources destinationMatched = 6;
+}
+
+message GetMatchedResourcesResponse {
+    MatchedResources sourceMatched = 1;
+    MatchedResources destinationMatched = 2;
+}
+
+message AppConnectionPolicy {
+    string id = 1;
+    AppConnection app_connection = 2;
+}
+
+message CreateAppConnectionPolicyRequest {
+    AppConnection app_connection = 1;
+}
+
+message CreateAppConnectionPolicyResponse {
+    string status = 1;
+    string id = 2;
+}
+
+message GetAppConnectionPolicyRequest {
+    string id = 1;
+}
+
+message GetAppConnectionPolicyResponse {
+    AppConnectionPolicy app_connection_policy = 1;
+}
+
+message DeleteAppConnectionPolicyRequest {
+    string id = 1;
+}
+
+message DeleteAppConnectionPolicyResponse {
+    string status = 1;
+}
+
+message ListAppConnectionPoliciesRequest {}
+
+message ListAppConnectionPoliciesResponse {
+    repeated AppConnectionPolicy app_connection_policies = 1;
+}

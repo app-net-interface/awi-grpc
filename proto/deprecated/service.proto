@@ -1,0 +1,152 @@
+// Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
+// All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http:www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+option go_package="./;awi";
+
+import "sla.proto";
+import "common.proto";
+
+message Metadata {
+    string name = 1;
+    string description = 2;
+    string address = 3;
+    string geo_location = 4;
+}
+
+message Source {
+    Metadata metadata = 1;
+    string type = 2;
+    string network_id = 3; // vpc_id or vrf_id
+    string provider = 4;   // aws|gcp|azure|
+    string vendor_controller = 5; // vendor controller name
+    string site_id = 6;    // for querying in vendor controller; internal
+}
+
+/* 
+    Destination service info : 
+    Prerequisite : Remote cluster service IP has been configured in remote vEdge and vManage understands how to route request
+    to the remote vEdge. If this doesn't happen, we need to explore what needs to be done in Cisco operator to make this happen.
+    One way is to get all ingress routing from vManage and get the vEdges that's connecting to the workload.
+    Do the translation of workload IP to vEdge IP in Cisco operator and send a connectivity requests. 
+*/
+
+message ConnectionIdentifier {
+    string name = 1; //
+    uint32 port = 2; //
+    string protocol = 3; //
+}
+
+message Destination {
+    Metadata metadata = 1;
+    string type = 2;
+    string network_id = 3; // vpc_id or vrf_id
+    string provider = 4;   // aws|gcp|azure|
+    string vendor_controller = 5; // vendor controller name
+    string site_id = 6;
+    string default_access_control = 7; // "allow_all" | "deny_all"
+}
+
+message ConnectionRequest {
+    string name = 1; // Connection Name
+    Source source = 3;
+    Destination destination = 4;
+    Network_SLA Network_SLA = 5;
+}
+
+
+
+
+
+// To do : Finalize using the term VPN/Connection/overlay
+// To do : We need a way to map a connection to the actual VPN connection. How to debug connection issues ? 
+message ConnectionResponse{
+
+    string connection_id = 1;
+    string connection_name = 2;
+    Error  error = 3; // request response code
+    Status status = 4; // Connection provisioning status : IN_PROGRESS, SUCCESS, FAILED
+    State  state = 5;  // State of the connection after it has been provisioned UP/DOWN
+    
+    message meta {
+        string connection_type = 1; // VPN/Connection/overlay
+        string connection_source_ip = 2; // Source IP of the connection
+        string connection_dest_ip = 3; // Destination IP of the connection
+        string connection_status_url = 4; // URL to get connection status
+        string connection_statistics_url =  5; // URL to get connection statistics
+        string connection_events_url = 6; // URL to get connection events
+    }
+    meta connection_meta = 6;
+}
+
+// disconnect
+message DisconnectRequest{
+    string connection_id = 1;
+}
+
+message DisconnectResponse{ 
+    string connection_id = 1;
+    string connection_name = 2;
+    Error  error = 3;    // request response code
+    Status status = 4;
+    State  state = 5; 
+}
+// GetConnection() - need a service registry integration
+message GetConnectionRequest {
+    string connection_id = 1;  
+}
+
+message ListConnectionsRequest {
+}
+message ListConnectionsResponse {
+    repeated ConnectionInformation connections = 1;
+    Error  error = 2;
+}
+message ConnectionStatusRequest {
+    string connection_id = 1;
+}
+message ConnectionStatusResponse {
+    Status connection_status =1;
+    Error  error = 2;
+}
+message ConnectionStatisticsRequest {
+    string connection_id = 1;
+}
+message ConnectionStatisticsResponse {
+    Status connection_status =1;
+    Error  error = 2;
+}
+message ConnectionEventsRequest {
+    string connection_id = 1;
+}
+message ConnectionEventsResponse {
+    Status connection_events =1;
+    Error  error = 2;
+}
+
+message ConnectionInformation {
+    string id = 1;
+    string name = 2;
+    Source source = 3;
+    Destination destination = 4;
+    Network_SLA Network_SLA = 5;
+
+    string controller = 6;
+    Status status = 7;
+    State  state = 8;
+}
+

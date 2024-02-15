@@ -1,0 +1,67 @@
+// Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
+// All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http:www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+option go_package="./;awi";
+
+import "common.proto";
+import "service.proto";
+import "sla.proto";
+
+// ServiceConnectionSpec defines the desired state of ServiceConnection
+message ServiceConnectionSpec {
+  Direction direction = 1;
+  string name = 2;
+  Destination destination = 3;
+  // +kubebuilder:validation:Optional
+  Source source = 4;
+  // +kubebuilder:validation:Optional
+  Hard_SLA sla = 5;
+}
+
+// ServiceConnectionStatus defines the observed state of ServiceConnection
+message ServiceConnectionStatus  {
+//    Active           []corev1.ObjectReference `json:"active,omitempty"`
+  string ConnectionStatus = 1;
+  string ConnectionId = 2;
+  string ConnectionName = 3;
+  string ConnectionType = 4;
+  string ConnectionState = 5;
+}
+
+
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
+// ServiceConnection is the Schema for the ServiceConnections API
+message ServiceConnection {
+  //metav1.TypeMeta   `json:",inline"`
+  //metav1.ObjectMeta `json:"metadata,omitempty"`
+
+  ServiceConnectionSpec spec = 1;
+  ServiceConnectionStatus status = 2;
+}
+
+
+//+kubebuilder:object:root=true
+// ServiceConnectionList contains a list of ServiceConnection
+message ServiceConnectionList {
+  //metav1.TypeMeta `json:",inline"`
+  //metav1.ListMeta `json:"metadata,omitempty"`
+  repeated ServiceConnection items = 1;
+}
+
+

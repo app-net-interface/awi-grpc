@@ -1,0 +1,83 @@
+// Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
+// All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http:www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+option go_package = "./;awi";
+
+message NetworkSLA {
+    message Metadata {
+        string name = 1;
+        string description = 2;
+        string creationTimestamp = 3;
+        string modificationTimestamp = 4;
+    }
+    Metadata metadata = 1;
+    TrafficProfile trafficProfile = 2;
+    // Don't use enums for now as they are problematic in CRD spec build
+    string priority = 3;
+    EnforcementRequest enforcementRequest = 4;
+}
+
+enum Priority {
+    BUSINESS_CRITICAL = 0;
+    MISSION_CRITICAL = 1;
+    ESSENTIAL = 2;
+    STRATEGIC = 3;
+    COMPLIANCE = 4;
+    CUSTOMER_FACING = 5;
+    OPERATIONAL = 6;
+    SUPPORT = 7;
+}
+
+message TrafficProfile {
+    float bandwidth = 1;
+    float jitter = 2;
+    float latency = 3;
+    float loss = 4;
+}
+
+enum EnforcementRequestType {
+    HARD = 0;
+    SOFT = 1;
+}
+
+message EnforcementRequest {
+    // Don't use enums for now as they are problematic in CRD spec build
+    string type = 1;
+}
+
+message Countries {
+    repeated string include = 1;
+    repeated string exclude = 2;
+}
+
+message Regions {
+    Countries countries = 1;
+}
+
+message NetworkPath {
+    message Metadata {
+        string name = 1;
+        string description = 2;
+        string creationTimestamp = 4;
+        string modificationTimestamp = 5;
+    }
+    Metadata metadata = 1;
+    Regions regions = 2;
+}
+

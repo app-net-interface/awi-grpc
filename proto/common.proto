@@ -1,0 +1,92 @@
+// Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
+// All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http:www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+option go_package="./;awi";
+// Enums 
+enum State {
+    UP = 0 ;
+    DOWN = 1;
+}
+
+enum Status {
+    IN_PROGRESS = 0 ;
+    SUCCESS = 1;
+    FAILED = 2;
+    WATCHING = 3;
+}
+
+enum Scope {
+    PRIVATE = 0;
+    PUBLIC = 1;
+}
+
+enum Direction {
+    EGRESS = 0;
+    INGRESS = 1;
+}
+
+// TBD  : Figure out what's important from an application admin's point of view
+// What information would be required if there is a need to debug a failure.
+message Statistics {
+    uint64 packets_sent = 1;
+    uint64 packets_received = 2; 
+    uint32 timeouts = 3;
+    uint32 retries = 4;
+    uint32 disconnects =5;
+}
+
+message Event {
+    string event_id = 1;
+    string event_name = 2;
+    string description = 3;
+}
+
+// REST API like error codes, but generic.
+enum ErrorCode 
+{
+    OK = 0;
+    INTERNAL_ERROR = 1;
+    TOO_MANY_REQUESTS = 2;
+}
+
+message Error {
+    ErrorCode error_code = 1;
+    string description = 2;
+}
+  
+message ControllerGetCapabilitiesRequest {}
+message ControllerGetCapabilitiesResponse {
+    ControllerCapabilities c = 1;
+}
+message ControllerCapabilities {
+}
+
+// Remote Service messages
+message ServiceInfo {
+    string service_name = 1; //FQDN
+    string service_type = 2; //Service / clusterIP/nodePort/  Etc.message
+    string service_ip = 3; //32 subnet 
+    string cluster_name = 4; // For information purpose 
+    string cluster_type = 5; // K8S or VM , or something else  
+    string cluster_id = 6; //   
+    message Health {
+        string health_check_url = 1; 
+        string error_code = 2;
+        string preferred_query_interval = 3;
+    }
+}

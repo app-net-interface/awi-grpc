@@ -1,0 +1,108 @@
+# This is a YAML document for network domain connection.
+
+# apiVersion: Defines the API version used for the network domain connection.
+apiVersion: awi.cisco.awi/v1 
+
+# kind: Specifies the type of object, in this case, InterNetworkDomainConnection.
+kind: InterNetworkDomainConnection # Connection across network domains
+
+# metadata: Contains the metadata for the network domain connection, including name and namespace.
+metadata:
+  name:    ""    # Generate an appropriate name.
+  namespace: "" # Describe the connection.
+
+# spec: Specifies the specification of the network domain connection.
+spec:
+  # metadata: Contains the metadata for the specification, including name, description, and timestamps.
+  metadata:
+    name: "app connection -1"
+    description: ""
+    creationTimestamp: "2023-08-15T12:34:56Z"
+    modificationTimestamp: "2023-08-15T13:45:67Z"
+    label:
+      key: "value" # State owner.account.<<value>>.
+
+  # source: Specifies the source network domain, including metadata and domain details.
+  source:
+    metadata:
+      name: "" # Source network domain name.
+      description: ""
+      creationTimestamp: "2023-08-15T12:34:56Z"
+      modificationTimestamp: "2023-08-15T13:45:67Z"
+      label: 
+        key: "value"
+    networkDomain:
+      accountId : "" # Use default account if none specified.
+      selector: # Select network name based on the below selection criteria.
+        - matchName:
+          name : ""
+        - matchId:
+          id : ""
+        - matchLabel:
+          key: ""
+
+  # destination: Specifies the destination network domain, including metadata and domain details.
+  destination:
+    metadata:
+      name: "" # Destination network domain name.
+      description: ""
+    networkDomain: # Choose network domain based on.
+      accountId : "" # Use default account if none specified.  
+      selector:
+        - matchName:
+          name : ""
+        - matchId:
+          id : ""
+        - matchLabel:
+          key: ""
+
+  # networkPolicy: Specifies the network policy, including selector details.
+  networkPolicy:
+    selector: 
+      - matchName:
+        name : "" 
+      - matchId: 
+        id : "" 
+      - matchLabel:
+        key : ""
+
+  # accessPolicy: Defines the access policy for the connection.
+  accessPolicy:
+    selector: 
+      - matchName:
+        name : "" 
+      - matchId: 
+        id : "" 
+      - matchLabel:
+        key : ""
+
+  # inspectionPolicy: Specifies the inspection policy, including criteria for matching.
+  inspectionPolicy:
+    selector: 
+      - matchName:
+        name : "" 
+      - matchId: 
+        id : "" 
+      - matchLabel:
+        key : ""
+
+  # appConnectionPolicy: Defines the application connection policy with selectors and expressions.
+  appConnectionPolicy:
+    selector: 
+      - matchLabel:
+        key1 : ""
+        key2: ""
+      - matchExpressions:
+        - {key: key1, operator: In, values: [value1, value2]}
+
+  # observabilityPolicy: Specifies the observability policy.
+  observabilityPolicy:
+    selector: 
+      - matchName:
+        name : ""
+
+  # costPolicy: Defines the cost policy with a selector for matching names.
+  costPolicy:
+    selector: 
+      - matchName:
+        name : ""

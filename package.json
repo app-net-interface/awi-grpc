@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "grpc-tools": "^1.12.4",
+    "ts-proto": "^1.162.1"
+  },
+  "dependencies": {
+    "protoc-gen-grpc-web": "^1.4.2"
+  }
+}

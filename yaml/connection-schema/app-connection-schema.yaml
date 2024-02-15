@@ -1,0 +1,241 @@
+# This YAML file describes an Application Connection in the AWI system.
+# It establishes connections between applications across different network domains, like VPCs or VRFs.
+# Each section of the file is detailed below.
+
+# apiVersion: Defines the API version used for the Application Connection.
+apiVersion: awi.cisco.awi/v1
+
+# kind: Specifies the type of object, here an InterNetworkDomainAppConnection.
+kind: InterNetworkDomainAppConnection
+
+# metadata: Contains the metadata for the Application Connection, like name and namespace.
+metadata:
+  name: App-connectivity-across-clusters
+  namespace: "inter-cluster-appsec"
+
+# appConnection: Main definition of the Application Connection, including specific details.
+appConnection:
+  # metadata (specific to appConnection): Includes name, description, and timestamps.
+  metadata:
+    name: "app connection -1"
+    description: ""
+    creationTimestamp: "2023-08-15T12:34:56Z"
+    modificationTimestamp: "2023-08-15T13:45:67Z"
+    label:
+      key: "value"
+
+  # from: Specifies the source entities for the connection.
+  from:
+    # endpoint: Defines compute resources (VMs, containers, pods) as sources.
+    - endpoint:
+      kind:
+        - vm
+        - container
+        - pod
+      selector:
+        - matchLabels:
+          key1: "value"
+          key2: "value"
+        - matchId:
+          id : "id"
+        - matchFQDN:
+          FQDN: "" 
+        - matchExpressions:
+          - { key: "key1", operator: In, values: [""] }
+          - { key: "key2", operator: NotIn, values: [""] }
+
+    # subnet: Defines a subnet as a source, with selectors for labels, prefixes, IDs, and network domains.
+    - subnet:
+      selector:
+        - matchLabels:
+          key1: "value"
+          key2: "value"
+        - matchPrefix:
+          ["10.0.0.0/24",] # Example prefix
+        - matchId: 
+          id : ""
+        - matchNetworkDomain:
+          networkDomainId: "" # Selects all subnets in a network domain
+        - matchExpressions:
+          - { key: key1, operator: In, values: [value1], matchPrefix : true }
+          - { key: key2, operator: NotIn, values: [value2], matchPrefix : true }
+
+    # namespace: Defines a Kubernetes namespace as a source, with selectors for names and labels.
+    - namespace:
+      selector:
+        - matchName: 
+          name: ""
+        - matchLabels:
+          key1: "value"
+          key2: "value"
+        - matchExpressions:
+          - { key: key1, operator: In, values: [value1] }
+          - { key: key2, operator: In, values: [value2] }
+
+    # cluster: Defines a cluster as a source, with selectors for names, IDs, and labels.
+    - cluster:
+      selector: 
+        - matchName:
+          name : ""
+        - matchId:
+          id : ""
+        - matchLabels:
+          key: "value"
+
+    # networkDomain: Defines a network domain (VPC or VRF) as a source, with selectors for labels, IDs, and names.
+    - networkDomain:
+      kind:
+        - vpc 
+        - vrf
+      selector:
+        - matchLabels:
+          key: "value"
+        - matchId:
+          id: ""
+        - matchName:
+          name: "value"
+
+    # sgt: Defines a source using Cisco SGT tags, with a selector for matching names.
+    - sgt:
+      selector:
+        matchName: "id"
+
+    # userGroup: Defines an Active Directory user group as a source, with a selector for matching names.
+    - userGroup:
+      selector:
+        matchName: "name"
+
+  # to: Specifies the destination entities for the connection.
+  to:
+    # endpoint: Defines destination compute resources (VMs, containers, pods).
+    - endpoint:
+      kind:
+        - vm
+        - container
+        - pod
+      selector:
+        - matchName: 
+          name : ""
+        - matchLabels:
+          key1: "value"
+          key2: "value"
+        - matchExpressions:
+          - { key: "key1", operator: In, values: [value1, value2] }
+          - { key: "key2", operator: NotIn, values: [value1, value2] }
+
+    # subnet: Defines a subnet as a destination, with selectors for labels, prefixes, and expressions.
+    - subnet:
+      selector:
+        - matchLabels:
+          key1: "value"
+          key2: "value"
+        - matchPrefix:
+          ["10.0.0.0/24",] # Example prefix
+        - matchExpressions:
+          - { key: key1, operator: In, values: [value1] }
+          - { key: key2, operator: In, values: [value2] }
+
+    # namespace: Defines a Kubernetes namespace as a destination, with selectors for names and labels.
+    - namespace:
+      selector:
+        matchName: 
+          name: ""
+        matchLabels:
+          key1: "value"
+          key2: "value"
+        matchExpressions:
+          - { key: key1, operator: In, values: [value1] }
+          - { key: key2, operator: In, values: [value2] }
+          - { key: key2, operator: NotIn, values: [value2] }
+
+    # service: Defines a service as a destination, with selectors for names, namespaces, labels, and hosts.
+    - service:
+      kind:
+        - k8sService
+          - loadBalancer
+            - l4 
+            - l7
+          - clusterIP
+          - nodePort
+        - vmService
+          - loadBalancer  
+            - l4
+            - l7
+      selector:
+        - matchName: #FQDN
+          name: ""
+        - matchNameSpace:
+          namespace: ""
+        - matchLabels: 
+          key1: "value" 
+          key2: "value"
+        - matchHost: # IP address
+          host : "ip address"
+        - matchExpressions:
+          - { key: key1, operator: In, values: [value1, value2] }
+          - { key: key2, operator: In, values: [value3, value4] }
+
+    # cluster: Defines a cluster as a destination, with selectors for names and labels.
+    - cluster:
+      selector: 
+        - matchName:
+          name : ""
+        - matchLabels:
+          name: ""
+
+    # networkDomain: Defines a network domain (VPC or VRF) as a destination, with selectors for labels, IDs, and names.
+    - networkDomain:
+      kind:
+        - vpc 
+        - vrf
+      selector:
+        - matchLabels:
+          key: "value"
+        - matchId:
+          id: ""
+        - matchName:
+          name: "value"
+
+    # externalEntities: Defines external URLs, FQDNs, or IPs as destinations.
+    - externalEntities:
+      selector:
+        - matchURL:
+          - https://www.example1.com/xyz
+          - http://acme.com
+          - tcp://xyz.com:5445
+          - udp://100.0.1.1:3433
+          - ftp://testftp.com
+
+    # sgt: Defines a destination using Cisco SGT tags, with a selector for matching names.
+    - sgt:
+      selector:
+        matchName: "id"
+
+    # userGroup: Defines an Active Directory user group as a destination, with a selector for matching names.
+    - userGroup:
+      selector:
+        matchName: "name"
+
+  # networkDomainConnection: Specifies network domain connection settings, including name and ID.
+  networkDomainConnection:
+    selector:
+      - matchName:
+        name:  "value"
+      - matchId:
+        id:  ""
+
+  # accessPolicy: Defines the access policy for the connection, with selectors for name, ID, and labels.
+  accessPolicy:
+    selector:
+      - matchName:
+        name : ""
+      - matchId: 
+        id : ""
+
+  # networkPolicy: Defines the network policy, with selectors for network-related configurations.
+  networkPolicy:
+    selector:
+      - matchName: 
+        name : ""
+      - matchId:
+        id : ""
