@@ -23,7 +23,7 @@ spec:
       key1: "value1" # Key-value pairs for search.
 
   # accessProtocols: Defines the access protocols and their respective ports.
-  accessProtocols:
+  accessPolicy:
     - protocol: TCP # Protocol selection from a dropdown of networking protocols.
       port: 8000    # User-defined port value.
     - protocol: HTTP
@@ -31,14 +31,14 @@ spec:
     - protocol: TCP
       port: "8000-9000" # Range of ports.
 
-  # accessType: Specifies the access type, chosen from a dropdown. Default is 'deny'.
-  accessType:
-    - allow   
-    - deny
-    - allow-with-logging
-    - allow-with-inspection
-    - deny-with-logging
-    - deny-with-inspection
+    # accessType: Specifies the access type, chosen from a dropdown. Default is 'deny'.
+    - action:
+      - allow   
+      - deny
+      - allow-with-logging
+      - allow-with-inspection
+      - deny-with-logging
+      - deny-with-inspection
 
-  # priority: Specifies the priority of the policy. A number between 10 to 100.
-  priority: 10
+    # priority: Specifies the priority of the policy. A number between 10 to 100.
+    - priority: 10
