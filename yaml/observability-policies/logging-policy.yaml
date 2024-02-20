@@ -18,7 +18,7 @@
 # This YAML file defines a loggingPolicy in the AWI system.
 
 # apiVersion: Specifies the API version used for the loggingPolicy.
-apiVersion: awi.cisco.awi/v1
+apiVersion: awi.app-net-interface.io/v1alpha
 
 # kind: Defines the type of object, here a loggingPolicy.
 kind: loggingPolicy 

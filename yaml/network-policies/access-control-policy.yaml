@@ -1,7 +1,7 @@
 # This YAML file defines an access policy in the AWI system.
 
 # apiVersion: Defines the API version used for the access policy.
-apiVersion: awi.cisco.awi/v1
+apiVersion: awi.app-net-interface.io/v1alpha
 
 # kind: Specifies the type of object, here an accessPolicy.
 kind: accessPolicy 

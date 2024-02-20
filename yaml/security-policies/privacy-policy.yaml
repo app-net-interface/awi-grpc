@@ -15,7 +15,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-apiVersion: awi.cisco.awi/v1
+apiVersion: awi.app-net-interface.io/v1alpha
 kind: privacyPolicy #A network domain could be a VPC or VRF. Exists behind a router.
 metadata:
   name: privacy-policy-1

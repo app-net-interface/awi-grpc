@@ -1,7 +1,7 @@
 # This YAML file defines a geofencing policy, specifically for GDPR compliance in the AWI system.
 
 # apiVersion: Specifies the API version used for the geofencing policy.
-apiVersion: awi.cisco.awi/v1
+apiVersion: awi.app-net-interface.io/v1alpha
 
 # kind: Defines the type of object, here a geofencing policy.
 kind: geofencing 

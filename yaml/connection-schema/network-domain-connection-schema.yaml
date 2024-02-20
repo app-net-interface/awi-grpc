@@ -1,7 +1,7 @@
 # This is a YAML document for network domain connection.
 
 # apiVersion: Defines the API version used for the network domain connection.
-apiVersion: awi.cisco.awi/v1 
+apiVersion: awi.app-net-interface.io/v1alpha
 
 # kind: Specifies the type of object, in this case, InterNetworkDomainConnection.
 kind: InterNetworkDomainConnection # Connection across network domains

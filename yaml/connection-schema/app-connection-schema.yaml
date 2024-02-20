@@ -3,7 +3,7 @@
 # Each section of the file is detailed below.
 
 # apiVersion: Defines the API version used for the Application Connection.
-apiVersion: awi.cisco.awi/v1
+apiVersion: awi.app-net-interface.io/v1alpha
 
 # kind: Specifies the type of object, here an InterNetworkDomainAppConnection.
 kind: InterNetworkDomainAppConnection
