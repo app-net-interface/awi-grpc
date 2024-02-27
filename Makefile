@@ -16,9 +16,11 @@ generate:
 	 \
 	 --js_out=import_style=commonjs:js --grpc-web_out=import_style=commonjs,mode=grpcwebtext:js \
 	 proto/*.proto
-	@echo "Copying generated files to awi-ui directory..."
-	rm -rf ${AWI_UI_PATH}/src/_proto/grpc-service/ts/*
-	cp -r ts/* ${AWI_UI_PATH}/src/_proto/grpc-service/ts/
+	@if [ -d "$(AWI_UI_PATH)" ]; then \
+		@echo "Copying generated files to awi-ui directory..."; \
+		rm -rf ${AWI_UI_PATH}/src/_proto/grpc-service/ts/*; \
+		cp -r ts/* ${AWI_UI_PATH}/src/_proto/grpc-service/ts/; \
+	fi
 
 .PHONY: tools
 tools:
