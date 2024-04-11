@@ -2,12 +2,6 @@
 
 Application WAN Interface (AWI) GRPC protobuf. This repository defines all services and methods defined as part of AWI.
 
-## Documentation
-
-<!-- TODO: update this link with the right one!! !-->
-Please refer to our full documentation
-[here](https://github.com/app-net-interface/.github).
-
 ## Code generation
 
 To generate code from protobufs code run `make generate`.
