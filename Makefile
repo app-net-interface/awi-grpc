@@ -1,4 +1,4 @@
-AWI_UI_PATH=../awi-ui
+AWI_UI_PATH=../../ausm/awi-ui
 
 .PHONY: all
 all: generate mocks
@@ -16,10 +16,13 @@ generate:
 	 \
 	 --js_out=import_style=commonjs:js --grpc-web_out=import_style=commonjs,mode=grpcwebtext:js \
 	 proto/*.proto
-	@echo "Copying generated files to awi-ui directory..."
-	rm -rf ${AWI_UI_PATH}/src/_proto/grpc-service/ts/*
-	cp -r ts/* ${AWI_UI_PATH}/src/_proto/grpc-service/ts/
-
+	@if [ -d "$(AWI_UI_PATH)/src/_proto/grpc-service/ts" ]; then \
+		rm -rf $(AWI_UI_PATH)/src/_proto/grpc-service/ts/*; \
+		cp -r ts/* $(AWI_UI_PATH)/src/_proto/grpc-service/ts/; \
+	else \
+		echo "Directory does not exist, skipping UI update."; \
+	fi
+	
 .PHONY: tools
 tools:
 	go install istio.io/tools/cmd/protoc-gen-golang-deepcopy@latest

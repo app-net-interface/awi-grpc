@@ -34,3 +34,20 @@ spec:
         countries:
           include: # List of countries to include in the routing path.
           exclude: # List of countries to exclude from the routing path.
+    cost-policy:
+      bandwidthUsage:
+        maxAllowed: 1000 # Maximum allowed bandwidth in Mbps
+        costPerUnit: 0.01 # Cost per Mbps per hour
+      preferredPaths:
+        - path: "low-cost-link"
+          costMultiplier: 0.8 # Apply a cost multiplier to prefer this path
+        - path: "high-speed-link"
+          costMultiplier: 1.2 # Less preferred due to higher cost
+      timeOfDayRouting:
+        - timeRange: "00:00-06:00"
+          path: "low-cost-link"
+          description: "Use low-cost link during off-peak hours"
+        - timeRange: "06:01-23:59"
+          path: "high-speed-link"
+          description: "Prefer high-speed link during peak hours, unless cost prohibitive"
+
