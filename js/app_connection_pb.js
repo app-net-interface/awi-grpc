@@ -1,44 +1,16 @@
-/**
- * Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
- * All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http:www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 // source: app_connection.proto
 /**
  * @fileoverview
  * @enhanceable
- * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
-/* eslint-disable */
-// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 var common_pb = require('./common_pb.js');
 goog.object.extend(proto, common_pb);
@@ -2149,8 +2121,7 @@ proto.AppMetadata.prototype.getLabelMap = function(opt_noLazyCreate) {
  */
 proto.AppMetadata.prototype.clearLabelMap = function() {
   this.getLabelMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -4157,8 +4128,7 @@ proto.Endpoint.Selector.prototype.getMatchlabelsMap = function(opt_noLazyCreate)
  */
 proto.Endpoint.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -4859,8 +4829,7 @@ proto.AppSubnet.Selector.prototype.getMatchlabelsMap = function(opt_noLazyCreate
  */
 proto.AppSubnet.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -5271,8 +5240,7 @@ proto.Namespace.Selector.prototype.getMatchlabelsMap = function(opt_noLazyCreate
  */
 proto.Namespace.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -6389,8 +6357,7 @@ proto.Service.Selector.prototype.getMatchlabelsMap = function(opt_noLazyCreate) 
  */
 proto.Service.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -6837,8 +6804,7 @@ proto.Cluster.Selector.prototype.getMatchlabelsMap = function(opt_noLazyCreate) 
  */
 proto.Cluster.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -7176,8 +7142,7 @@ proto.NetworkDomain.Selector.prototype.getMatchlabelsMap = function(opt_noLazyCr
  */
 proto.NetworkDomain.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 /**
@@ -7692,8 +7657,7 @@ proto.AccessPolicySelector.Selector.prototype.getMatchlabelsMap = function(opt_n
  */
 proto.AccessPolicySelector.Selector.prototype.clearMatchlabelsMap = function() {
   this.getMatchlabelsMap().clear();
-  return this;
-};
+  return this;};
 
 
 

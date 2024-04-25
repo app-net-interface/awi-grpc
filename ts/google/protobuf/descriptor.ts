@@ -1,22 +1,3 @@
-/**
- * Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
- * All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http:www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
@@ -65,13 +46,9 @@ export interface FileDescriptorProto {
     | undefined;
   /**
    * The syntax of the proto file.
-   * The supported values are "proto2", "proto3", and "editions".
-   *
-   * If `edition` is present, this value must be "editions".
+   * The supported values are "proto2" and "proto3".
    */
   syntax: string;
-  /** The edition of the proto file, which is an opaque string. */
-  edition: string;
 }
 
 /** Describes a message type. */
@@ -145,6 +122,7 @@ export interface FieldDescriptorProto {
    * For booleans, "true" or "false".
    * For strings, contains the default text contents (not escaped in any way).
    * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
+   * TODO(kenton):  Base-64 encode?
    */
   defaultValue: string;
   /**
@@ -322,18 +300,18 @@ export interface FileOptions {
    */
   javaPackage: string;
   /**
-   * Controls the name of the wrapper Java class generated for the .proto file.
-   * That class will always contain the .proto file's getDescriptor() method as
-   * well as any top-level extensions defined in the .proto file.
-   * If java_multiple_files is disabled, then all the other classes from the
-   * .proto file will be nested inside the single wrapper outer class.
+   * If set, all the classes from the .proto file are wrapped in a single
+   * outer class with the given name.  This applies to both Proto1
+   * (equivalent to the old "--one_java_file" option) and Proto2 (where
+   * a .proto always translates to a single class, but you may want to
+   * explicitly choose the class name).
    */
   javaOuterClassname: string;
   /**
-   * If enabled, then the Java code generator will generate a separate .java
+   * If set true, then the Java code generator will generate a separate .java
    * file for each top-level message, enum, and service defined in the .proto
-   * file.  Thus, these types will *not* be nested inside the wrapper class
-   * named by java_outer_classname.  However, the wrapper class will still be
+   * file.  Thus, these types will *not* be nested inside the outer class
+   * named by java_outer_classname.  However, the outer class will still be
    * generated to contain the file's getDescriptor() method as well as any
    * top-level extensions defined in the file.
    */
@@ -481,10 +459,6 @@ export interface MessageOptions {
    */
   deprecated: boolean;
   /**
-   * NOTE: Do not set the option in .proto files. Always use the maps syntax
-   * instead. The option should only be implicitly set by the proto compiler
-   * parser.
-   *
    * Whether the message is an automatically generated map entry type for the
    * maps field.
    *
@@ -502,23 +476,12 @@ export interface MessageOptions {
    * use a native map in the target language to hold the keys and values.
    * The reflection APIs in such implementations still need to work as
    * if the field is a repeated message field.
+   *
+   * NOTE: Do not set the option in .proto files. Always use the maps syntax
+   * instead. The option should only be implicitly set by the proto compiler
+   * parser.
    */
   mapEntry: boolean;
-  /**
-   * Enable the legacy handling of JSON field name conflicts.  This lowercases
-   * and strips underscored from the fields before comparison in proto3 only.
-   * The new behavior takes `json_name` into account and applies to proto2 as
-   * well.
-   *
-   * This should only be used as a temporary measure against broken builds due
-   * to the change in behavior for JSON field name conflicts.
-   *
-   * TODO(b/261750190) This is legacy behavior we plan to remove once downstream
-   * teams have had time to migrate.
-   *
-   * @deprecated
-   */
-  deprecatedLegacyJsonFieldConflicts: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
   uninterpretedOption: UninterpretedOption[];
 }
@@ -581,17 +544,8 @@ export interface FieldOptions {
    * implementation must either *always* check its required fields, or *never*
    * check its required fields, regardless of whether or not the message has
    * been parsed.
-   *
-   * As of May 2022, lazy verifies the contents of the byte stream during
-   * parsing.  An invalid byte stream will cause the overall parsing to fail.
    */
   lazy: boolean;
-  /**
-   * unverified_lazy does no correctness checks on the byte stream. This should
-   * only be used where lazy with verification is prohibitive for performance
-   * reasons.
-   */
-  unverifiedLazy: boolean;
   /**
    * Is this field deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
@@ -601,13 +555,6 @@ export interface FieldOptions {
   deprecated: boolean;
   /** For Google-internal migration only. Do not use. */
   weak: boolean;
-  /**
-   * Indicate that the field value should not be printed out when using debug
-   * formats, e.g. when the field contains sensitive credentials.
-   */
-  debugRedact: boolean;
-  retention: FieldOptions_OptionRetention;
-  target: FieldOptions_OptionTargetType;
   /** The parser stores options it doesn't recognize here. See above. */
   uninterpretedOption: UninterpretedOption[];
 }
@@ -630,38 +577,6 @@ export enum FieldOptions_JSType {
   UNRECOGNIZED = -1,
 }
 
-/**
- * If set to RETENTION_SOURCE, the option will be omitted from the binary.
- * Note: as of January 2023, support for this is in progress and does not yet
- * have an effect (b/264593489).
- */
-export enum FieldOptions_OptionRetention {
-  RETENTION_UNKNOWN = 0,
-  RETENTION_RUNTIME = 1,
-  RETENTION_SOURCE = 2,
-  UNRECOGNIZED = -1,
-}
-
-/**
- * This indicates the types of entities that the field may apply to when used
- * as an option. If it is unset, then the field may be freely used as an
- * option on any kind of entity. Note: as of January 2023, support for this is
- * in progress and does not yet have an effect (b/264593489).
- */
-export enum FieldOptions_OptionTargetType {
-  TARGET_TYPE_UNKNOWN = 0,
-  TARGET_TYPE_FILE = 1,
-  TARGET_TYPE_EXTENSION_RANGE = 2,
-  TARGET_TYPE_MESSAGE = 3,
-  TARGET_TYPE_FIELD = 4,
-  TARGET_TYPE_ONEOF = 5,
-  TARGET_TYPE_ENUM = 6,
-  TARGET_TYPE_ENUM_ENTRY = 7,
-  TARGET_TYPE_SERVICE = 8,
-  TARGET_TYPE_METHOD = 9,
-  UNRECOGNIZED = -1,
-}
-
 export interface OneofOptions {
   /** The parser stores options it doesn't recognize here. See above. */
   uninterpretedOption: UninterpretedOption[];
@@ -680,17 +595,6 @@ export interface EnumOptions {
    * is a formalization for deprecating enums.
    */
   deprecated: boolean;
-  /**
-   * Enable the legacy handling of JSON field name conflicts.  This lowercases
-   * and strips underscored from the fields before comparison in proto3 only.
-   * The new behavior takes `json_name` into account and applies to proto2 as
-   * well.
-   * TODO(b/261750190) Remove this legacy behavior once downstream teams have
-   * had time to migrate.
-   *
-   * @deprecated
-   */
-  deprecatedLegacyJsonFieldConflicts: boolean;
   /** The parser stores options it doesn't recognize here. See above. */
   uninterpretedOption: UninterpretedOption[];
 }
@@ -772,8 +676,8 @@ export interface UninterpretedOption {
  * The name of the uninterpreted option.  Each string represents a segment in
  * a dot-separated name.  is_extension is true iff a segment represents an
  * extension (denoted with parentheses in options specs in .proto files).
- * E.g.,{ ["foo", false], ["bar.baz", true], ["moo", false] } represents
- * "foo.(bar.baz).moo".
+ * E.g.,{ ["foo", false], ["bar.baz", true], ["qux", false] } represents
+ * "foo.(bar.baz).qux".
  */
 export interface UninterpretedOption_NamePart {
   namePart: string;
@@ -839,8 +743,8 @@ export interface SourceCodeInfo_Location {
    * location.
    *
    * Each element is a field number or an index.  They form a path from
-   * the root FileDescriptorProto to the place where the definition occurs.
-   * For example, this path:
+   * the root FileDescriptorProto to the place where the definition.  For
+   * example, this path:
    *   [ 4, 3, 2, 7, 1 ]
    * refers to:
    *   file.message_type(3)  // 4, 3
@@ -896,13 +800,13 @@ export interface SourceCodeInfo_Location {
    *   // Comment attached to baz.
    *   // Another line attached to baz.
    *
-   *   // Comment attached to moo.
+   *   // Comment attached to qux.
    *   //
-   *   // Another line attached to moo.
-   *   optional double moo = 4;
+   *   // Another line attached to qux.
+   *   optional double qux = 4;
    *
    *   // Detached comment for corge. This is not leading or trailing comments
-   *   // to moo or corge because there are blank lines separating it from
+   *   // to qux or corge because there are blank lines separating it from
    *   // both.
    *
    *   // Detached comment for corge paragraph 2.
@@ -950,25 +854,10 @@ export interface GeneratedCodeInfo_Annotation {
   begin: number;
   /**
    * Identifies the ending offset in bytes in the generated code that
-   * relates to the identified object. The end offset should be one past
+   * relates to the identified offset. The end offset should be one past
    * the last relevant byte (so the length of the text = end - begin).
    */
   end: number;
-  semantic: GeneratedCodeInfo_Annotation_Semantic;
-}
-
-/**
- * Represents the identified object's effect on the element in the original
- * .proto file.
- */
-export enum GeneratedCodeInfo_Annotation_Semantic {
-  /** NONE - There is no effect or the effect is indescribable. */
-  NONE = 0,
-  /** SET - The element is set or otherwise mutated. */
-  SET = 1,
-  /** ALIAS - An alias to the element is returned. */
-  ALIAS = 2,
-  UNRECOGNIZED = -1,
 }
 
 function createBaseFileDescriptorSet(): FileDescriptorSet {
@@ -1030,7 +919,6 @@ function createBaseFileDescriptorProto(): FileDescriptorProto {
     options: undefined,
     sourceCodeInfo: undefined,
     syntax: "",
-    edition: "",
   };
 }
 
@@ -1075,9 +963,6 @@ export const FileDescriptorProto = {
     }
     if (message.syntax !== "") {
       writer.uint32(98).string(message.syntax);
-    }
-    if (message.edition !== "") {
-      writer.uint32(106).string(message.edition);
     }
     return writer;
   },
@@ -1193,13 +1078,6 @@ export const FileDescriptorProto = {
 
           message.syntax = reader.string();
           continue;
-        case 13:
-          if (tag !== 106) {
-            break;
-          }
-
-          message.edition = reader.string();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1230,7 +1108,6 @@ export const FileDescriptorProto = {
       ? SourceCodeInfo.fromPartial(object.sourceCodeInfo)
       : undefined;
     message.syntax = object.syntax ?? "";
-    message.edition = object.edition ?? "";
     return message;
   },
 };
@@ -2477,7 +2354,6 @@ function createBaseMessageOptions(): MessageOptions {
     noStandardDescriptorAccessor: false,
     deprecated: false,
     mapEntry: false,
-    deprecatedLegacyJsonFieldConflicts: false,
     uninterpretedOption: [],
   };
 }
@@ -2495,9 +2371,6 @@ export const MessageOptions = {
     }
     if (message.mapEntry === true) {
       writer.uint32(56).bool(message.mapEntry);
-    }
-    if (message.deprecatedLegacyJsonFieldConflicts === true) {
-      writer.uint32(88).bool(message.deprecatedLegacyJsonFieldConflicts);
     }
     for (const v of message.uninterpretedOption) {
       UninterpretedOption.encode(v!, writer.uint32(7994).fork()).ldelim();
@@ -2540,13 +2413,6 @@ export const MessageOptions = {
 
           message.mapEntry = reader.bool();
           continue;
-        case 11:
-          if (tag !== 88) {
-            break;
-          }
-
-          message.deprecatedLegacyJsonFieldConflicts = reader.bool();
-          continue;
         case 999:
           if (tag !== 7994) {
             break;
@@ -2572,26 +2438,13 @@ export const MessageOptions = {
     message.noStandardDescriptorAccessor = object.noStandardDescriptorAccessor ?? false;
     message.deprecated = object.deprecated ?? false;
     message.mapEntry = object.mapEntry ?? false;
-    message.deprecatedLegacyJsonFieldConflicts = object.deprecatedLegacyJsonFieldConflicts ?? false;
     message.uninterpretedOption = object.uninterpretedOption?.map((e) => UninterpretedOption.fromPartial(e)) || [];
     return message;
   },
 };
 
 function createBaseFieldOptions(): FieldOptions {
-  return {
-    ctype: 0,
-    packed: false,
-    jstype: 0,
-    lazy: false,
-    unverifiedLazy: false,
-    deprecated: false,
-    weak: false,
-    debugRedact: false,
-    retention: 0,
-    target: 0,
-    uninterpretedOption: [],
-  };
+  return { ctype: 0, packed: false, jstype: 0, lazy: false, deprecated: false, weak: false, uninterpretedOption: [] };
 }
 
 export const FieldOptions = {
@@ -2608,23 +2461,11 @@ export const FieldOptions = {
     if (message.lazy === true) {
       writer.uint32(40).bool(message.lazy);
     }
-    if (message.unverifiedLazy === true) {
-      writer.uint32(120).bool(message.unverifiedLazy);
-    }
     if (message.deprecated === true) {
       writer.uint32(24).bool(message.deprecated);
     }
     if (message.weak === true) {
       writer.uint32(80).bool(message.weak);
-    }
-    if (message.debugRedact === true) {
-      writer.uint32(128).bool(message.debugRedact);
-    }
-    if (message.retention !== 0) {
-      writer.uint32(136).int32(message.retention);
-    }
-    if (message.target !== 0) {
-      writer.uint32(144).int32(message.target);
     }
     for (const v of message.uninterpretedOption) {
       UninterpretedOption.encode(v!, writer.uint32(7994).fork()).ldelim();
@@ -2667,13 +2508,6 @@ export const FieldOptions = {
 
           message.lazy = reader.bool();
           continue;
-        case 15:
-          if (tag !== 120) {
-            break;
-          }
-
-          message.unverifiedLazy = reader.bool();
-          continue;
         case 3:
           if (tag !== 24) {
             break;
@@ -2687,27 +2521,6 @@ export const FieldOptions = {
           }
 
           message.weak = reader.bool();
-          continue;
-        case 16:
-          if (tag !== 128) {
-            break;
-          }
-
-          message.debugRedact = reader.bool();
-          continue;
-        case 17:
-          if (tag !== 136) {
-            break;
-          }
-
-          message.retention = reader.int32() as any;
-          continue;
-        case 18:
-          if (tag !== 144) {
-            break;
-          }
-
-          message.target = reader.int32() as any;
           continue;
         case 999:
           if (tag !== 7994) {
@@ -2734,12 +2547,8 @@ export const FieldOptions = {
     message.packed = object.packed ?? false;
     message.jstype = object.jstype ?? 0;
     message.lazy = object.lazy ?? false;
-    message.unverifiedLazy = object.unverifiedLazy ?? false;
     message.deprecated = object.deprecated ?? false;
     message.weak = object.weak ?? false;
-    message.debugRedact = object.debugRedact ?? false;
-    message.retention = object.retention ?? 0;
-    message.target = object.target ?? 0;
     message.uninterpretedOption = object.uninterpretedOption?.map((e) => UninterpretedOption.fromPartial(e)) || [];
     return message;
   },
@@ -2791,7 +2600,7 @@ export const OneofOptions = {
 };
 
 function createBaseEnumOptions(): EnumOptions {
-  return { allowAlias: false, deprecated: false, deprecatedLegacyJsonFieldConflicts: false, uninterpretedOption: [] };
+  return { allowAlias: false, deprecated: false, uninterpretedOption: [] };
 }
 
 export const EnumOptions = {
@@ -2801,9 +2610,6 @@ export const EnumOptions = {
     }
     if (message.deprecated === true) {
       writer.uint32(24).bool(message.deprecated);
-    }
-    if (message.deprecatedLegacyJsonFieldConflicts === true) {
-      writer.uint32(48).bool(message.deprecatedLegacyJsonFieldConflicts);
     }
     for (const v of message.uninterpretedOption) {
       UninterpretedOption.encode(v!, writer.uint32(7994).fork()).ldelim();
@@ -2832,13 +2638,6 @@ export const EnumOptions = {
 
           message.deprecated = reader.bool();
           continue;
-        case 6:
-          if (tag !== 48) {
-            break;
-          }
-
-          message.deprecatedLegacyJsonFieldConflicts = reader.bool();
-          continue;
         case 999:
           if (tag !== 7994) {
             break;
@@ -2862,7 +2661,6 @@ export const EnumOptions = {
     const message = createBaseEnumOptions();
     message.allowAlias = object.allowAlias ?? false;
     message.deprecated = object.deprecated ?? false;
-    message.deprecatedLegacyJsonFieldConflicts = object.deprecatedLegacyJsonFieldConflicts ?? false;
     message.uninterpretedOption = object.uninterpretedOption?.map((e) => UninterpretedOption.fromPartial(e)) || [];
     return message;
   },
@@ -3426,7 +3224,7 @@ export const GeneratedCodeInfo = {
 };
 
 function createBaseGeneratedCodeInfo_Annotation(): GeneratedCodeInfo_Annotation {
-  return { path: [], sourceFile: "", begin: 0, end: 0, semantic: 0 };
+  return { path: [], sourceFile: "", begin: 0, end: 0 };
 }
 
 export const GeneratedCodeInfo_Annotation = {
@@ -3444,9 +3242,6 @@ export const GeneratedCodeInfo_Annotation = {
     }
     if (message.end !== 0) {
       writer.uint32(32).int32(message.end);
-    }
-    if (message.semantic !== 0) {
-      writer.uint32(40).int32(message.semantic);
     }
     return writer;
   },
@@ -3496,13 +3291,6 @@ export const GeneratedCodeInfo_Annotation = {
 
           message.end = reader.int32();
           continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.semantic = reader.int32() as any;
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3521,7 +3309,6 @@ export const GeneratedCodeInfo_Annotation = {
     message.sourceFile = object.sourceFile ?? "";
     message.begin = object.begin ?? 0;
     message.end = object.end ?? 0;
-    message.semantic = object.semantic ?? 0;
     return message;
   },
 };

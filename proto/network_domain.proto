@@ -27,4 +27,5 @@ message NetworkDomainObject {
     string accountId = 5;
     string sideId = 6;
     map<string, string> labels = 7;
+    string region = 8;
 }
