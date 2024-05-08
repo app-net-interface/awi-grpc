@@ -15,6 +15,53 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+# Traffic Type 
+  # API Services
+  # Artificial Intelligence (AI) Applications
+  # Augmented Reality (AR)
+  # Backup and Recovery Systems
+  # Big Data Processing
+  # Blockchain Transactions
+  # Business Intelligence Tools
+  # Business Process Management (BPM)
+  # Collaboration Tools
+  # Content Delivery Networks (CDN)
+  # Content Management Systems (CMS)
+  # CRM Software
+  # Customer Relationship Management (CRM)
+  # Database Systems
+  # Document Management Systems
+  # Email Servers
+  # Engineering
+  # Enterprise Asset Management (EAM)
+  # Enterprise Resource Planning (ERP)
+  # ERP Systems
+  # File Sharing and Storage
+  # Financial Services
+  # Generic
+  # Human Resources Management (HRM)
+  # Identity and Access Management
+  # Intranet and Internal Web Applications
+  # Internet of Things (IoT) Devices
+  # Learning Management Systems (LMS)
+  # Machine Learning (ML) Training
+  # Messaging Services
+  # Mixed Reality (MR)
+  # Network Management and Monitoring
+  # Product Lifecycle Management (PLM)
+  # Project Management
+  # Real-time Analytics
+  # Security Services
+  # Service Mesh
+  # Software Development and Version Control
+  # Streaming Services
+  # Supply Chain Management (SCM)
+  # Virtual Meeting Platforms
+  # Virtual Private Network (VPN)
+  # Virtual Reality (VR)
+  # Video Streaming Services
+  # VoIP Systems
+
 apiVersion: awi.app-net-interface.io/v1alpha
 kind: TrafficPolicy #A network domain could be a VPC or VRF. Exists behind a router.
 metadata:
@@ -27,7 +74,7 @@ spec:
     creationTimestamp: "2023-08-15T12:34:56Z"
     modificationTimestamp: "2023-08-15T13:45:67Z"
     category: "Regular" #Business Critical | Mission critical | Essential | Regular | Strategic | Compliance | Customer-Facing | Operational | Support
-    trafficType: ""  # List of traffic types below;
+    trafficType: ""  
   trafficSLO: 
     priority: 0 # Between 0 to 10
     QoSParams: 
