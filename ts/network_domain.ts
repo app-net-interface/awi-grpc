@@ -1,22 +1,3 @@
-/**
- * Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
- * All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http:www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
 
@@ -30,6 +11,7 @@ export interface NetworkDomainObject {
   accountId: string;
   sideId: string;
   labels: { [key: string]: string };
+  region: string;
 }
 
 export interface NetworkDomainObject_LabelsEntry {
@@ -38,7 +20,7 @@ export interface NetworkDomainObject_LabelsEntry {
 }
 
 function createBaseNetworkDomainObject(): NetworkDomainObject {
-  return { type: "", provider: "", id: "", name: "", accountId: "", sideId: "", labels: {} };
+  return { type: "", provider: "", id: "", name: "", accountId: "", sideId: "", labels: {}, region: "" };
 }
 
 export const NetworkDomainObject = {
@@ -64,6 +46,9 @@ export const NetworkDomainObject = {
     Object.entries(message.labels).forEach(([key, value]) => {
       NetworkDomainObject_LabelsEntry.encode({ key: key as any, value }, writer.uint32(58).fork()).ldelim();
     });
+    if (message.region !== "") {
+      writer.uint32(66).string(message.region);
+    }
     return writer;
   },
 
@@ -126,6 +111,13 @@ export const NetworkDomainObject = {
             message.labels[entry7.key] = entry7.value;
           }
           continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.region = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -152,6 +144,7 @@ export const NetworkDomainObject = {
       }
       return acc;
     }, {});
+    message.region = object.region ?? "";
     return message;
   },
 };

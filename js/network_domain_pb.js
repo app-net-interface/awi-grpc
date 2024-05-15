@@ -1,44 +1,16 @@
-/**
- * Copyright (c) 2023 Cisco Systems, Inc. and its affiliates
- * All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http:www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-
 // source: network_domain.proto
 /**
  * @fileoverview
  * @enhanceable
- * @suppress {missingRequire} reports error on implicit type usages.
  * @suppress {messageConventions} JS Compiler reports an error if a variable or
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
-/* eslint-disable */
-// @ts-nocheck
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 goog.exportSymbol('proto.NetworkDomainObject', null, global);
 /**
@@ -100,7 +72,8 @@ proto.NetworkDomainObject.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 4, ""),
     accountid: jspb.Message.getFieldWithDefault(msg, 5, ""),
     sideid: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    labelsMap: (f = msg.getLabelsMap()) ? f.toObject(includeInstance, undefined) : []
+    labelsMap: (f = msg.getLabelsMap()) ? f.toObject(includeInstance, undefined) : [],
+    region: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -166,6 +139,10 @@ proto.NetworkDomainObject.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "", "");
          });
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRegion(value);
       break;
     default:
       reader.skipField();
@@ -241,6 +218,13 @@ proto.NetworkDomainObject.serializeBinaryToWriter = function(message, writer) {
   f = message.getLabelsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
+  }
+  f = message.getRegion();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
   }
 };
 
@@ -372,7 +356,24 @@ proto.NetworkDomainObject.prototype.getLabelsMap = function(opt_noLazyCreate) {
  */
 proto.NetworkDomainObject.prototype.clearLabelsMap = function() {
   this.getLabelsMap().clear();
-  return this;
+  return this;};
+
+
+/**
+ * optional string region = 8;
+ * @return {string}
+ */
+proto.NetworkDomainObject.prototype.getRegion = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.NetworkDomainObject} returns this
+ */
+proto.NetworkDomainObject.prototype.setRegion = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
